@@ -80,10 +80,21 @@ int evaluateBestStrategy(const Blueprint &bp, const State &state) {
   }
   if (state.obsidianRobots > 0) {
     // will be able to build a geode robot at some point, skip to that point if within time range
-    int obsidianRounds = ceilDivide(bp.geodeRobotObsidianCost - state.obsidian, state.obsidianRobots);
-    int oreRounds = ceilDivide(bp.geodeRobotOreCost - state.ore, state.oreRobots);
+    int obsidianRounds; 
+    if (state.obsidian >= bp.geodeRobotObsidianCost) {
+      obsidianRounds = 0;
+    }
+    else {
+      obsidianRounds = ceilDivide(bp.geodeRobotObsidianCost - state.obsidian, state.obsidianRobots);
+    }
+    int oreRounds; 
+    if (state.ore >= bp.geodeRobotOreCost) {
+      oreRounds = 0;
+    }
+    else {
+      oreRounds = ceilDivide(bp.geodeRobotOreCost - state.ore, state.oreRobots);
+    }
     int roundsNeeded = std::max(oreRounds, obsidianRounds) + 1;
-    roundsNeeded = std::max(1, roundsNeeded); // prevent going back in time
     if (roundsNeeded < state.rounds) {
       // skip to having built the geode robot
       State newState = state;
@@ -102,10 +113,21 @@ int evaluateBestStrategy(const Blueprint &bp, const State &state) {
   if (state.oreRobots < bp.geodeRobotOreCost || state.obsidianRobots < bp.geodeRobotObsidianCost) {
     if (state.clayRobots > 0 && state.obsidianRobots < bp.geodeRobotObsidianCost) {
       // will be able to build an obsidian robot at some point, skip to that point if within time range
-      int clayRounds = ceilDivide(bp.obsidianRobotClayCost - state.clay, state.clayRobots);
-      int oreRounds = ceilDivide(bp.obsidianRobotOreCost - state.ore, state.oreRobots);
+      int clayRounds; 
+      if (state.clay >= bp.obsidianRobotClayCost) {
+        clayRounds = 0;
+      }
+      else {
+        clayRounds = ceilDivide(bp.obsidianRobotClayCost - state.clay, state.clayRobots);
+      }
+      int oreRounds;
+      if (state.ore >= bp.obsidianRobotOreCost) {
+        oreRounds = 0;
+      }
+      else {
+        oreRounds = ceilDivide(bp.obsidianRobotOreCost - state.ore, state.oreRobots);
+      }
       int roundsNeeded = std::max(oreRounds, clayRounds) + 1;
-      roundsNeeded = std::max(1, roundsNeeded); // prevent going back in time
       if (roundsNeeded < state.rounds) {
         // skip to having built the obsidian robot
         State newState = state;
@@ -127,8 +149,13 @@ int evaluateBestStrategy(const Blueprint &bp, const State &state) {
     }
     if (state.oreRobots > 0 && state.clayRobots < bp.obsidianRobotClayCost) {
       // will be able to build a clay robot at some point, skip to that point if within time range
-      int roundsNeeded = ceilDivide(bp.clayRobotOreCost - state.ore, state.oreRobots) + 1;
-      roundsNeeded = std::max(1, roundsNeeded); // prevent going back in time
+      int roundsNeeded;
+      if (state.ore >= bp.clayRobotOreCost) {
+        roundsNeeded = 1;
+      }
+      else {
+        roundsNeeded = ceilDivide(bp.clayRobotOreCost - state.ore, state.oreRobots) + 1;
+      }
       if (roundsNeeded < state.rounds) {
         // skip to having built the clay robot
         State newState = state;
@@ -152,8 +179,13 @@ int evaluateBestStrategy(const Blueprint &bp, const State &state) {
     }
     if (state.oreRobots < bp.maxOreRobots) {
       // will be able to build an ore robot at some point, skip to that point if within time range
-      int roundsNeeded = ceilDivide(bp.oreRobotOreCost - state.ore, state.oreRobots) + 1;
-      roundsNeeded = std::max(1, roundsNeeded); // prevent going back in time
+      int roundsNeeded;
+      if (state.ore >= bp.oreRobotOreCost) {
+        roundsNeeded = 1;
+      }
+      else {
+        roundsNeeded = ceilDivide(bp.oreRobotOreCost - state.ore, state.oreRobots) + 1;
+      }
       if (roundsNeeded < state.rounds) {
         // skip to having built the ore robot
         State newState = state;
